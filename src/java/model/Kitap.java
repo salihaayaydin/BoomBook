@@ -24,6 +24,8 @@ public class Kitap {
     private String aciklama;
     private String yayinTarihi;
     private int stokMiktari;
+    private Double ortalamaPuan;       // null = henuz hic degerlendirme yok
+    private int degerlendirmeSayisi;
 
     public Kitap() {
     }
@@ -172,5 +174,21 @@ public class Kitap {
 
     public void setStokMiktari(int stokMiktari) {
         this.stokMiktari = stokMiktari;
+    }
+
+    public Double getOrtalamaPuan() {
+        return ortalamaPuan;
+    }
+
+    public void setOrtalamaPuan(Double ortalamaPuan) {
+        this.ortalamaPuan = ortalamaPuan;
+    }
+
+    public int getDegerlendirmeSayisi() {
+        return degerlendirmeSayisi;
+    }
+
+    public void setDegerlendirmeSayisi(int degerlendirmeSayisi) {
+        this.degerlendirmeSayisi = degerlendirmeSayisi;
     }
 }

@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 public class KullaniciDAO {
 
     private static final String SELECT_ALANLAR =
-            "kullanici_id, ad_soyad, email, sifre_hash, rol, aktif, kayit_tarihi";
+            "kullanici_id, ad_soyad, email, sifre_hash, rol, aktif, olusturma_tarihi";
 
     public Kullanici getByEmail(String email) throws SQLException {
         String sql = "SELECT " + SELECT_ALANLAR + " FROM kullanici WHERE email = ?";
@@ -81,8 +81,46 @@ public class KullaniciDAO {
         k.setSifreHash(rs.getString("sifre_hash"));
         k.setRol(rs.getString("rol"));
         k.setAktif(rs.getBoolean("aktif"));
-        Timestamp ts = rs.getTimestamp("kayit_tarihi");
+        Timestamp ts = rs.getTimestamp("olusturma_tarihi");
         k.setKayitTarihi(ts != null ? ts.toString() : null);
         return k;
+    }
+
+    /* ================= ADMIN KULLANICI YONETIMI ================= */
+
+    /** Admin paneli icin tum kullanicilari getirir (sifreHash alani transient oldugu icin hicbir zaman JSON'a yazilmaz). */
+    public java.util.List<Kullanici> tumKullanicilariGetir() throws SQLException {
+        String sql = "SELECT " + SELECT_ALANLAR + " FROM kullanici ORDER BY olusturma_tarihi DESC";
+        java.util.List<Kullanici> liste = new java.util.ArrayList<>();
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                liste.add(map(rs));
+            }
+        }
+        return liste;
+    }
+
+    /** Bir kullanicinin rolunu degistirir ("Musteri" | "Admin"). */
+    public boolean rolGuncelle(int kullaniciId, String yeniRol) throws SQLException {
+        String sql = "UPDATE kullanici SET rol = ? WHERE kullanici_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, yeniRol);
+            ps.setInt(2, kullaniciId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /** Bir kullaniciyi aktif/pasif yapar (pasif kullanicilar giris yapamaz, bkz. AuthServlet). */
+    public boolean aktifGuncelle(int kullaniciId, boolean aktif) throws SQLException {
+        String sql = "UPDATE kullanici SET aktif = ? WHERE kullanici_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setBoolean(1, aktif);
+            ps.setInt(2, kullaniciId);
+            return ps.executeUpdate() > 0;
+        }
     }
 }

@@ -1,6 +1,7 @@
 package controller;
 
 import com.google.gson.Gson;
+import dao.DuyuruDAO;
 import dao.KitapDAO;
 import util.DosyaYardimcisi;
 
@@ -29,12 +30,15 @@ import java.util.logging.Logger;
  *
  * POST /api/admin/yukle (multipart/form-data)
  *   Form alanlari:
- *     kitapId   -> zorunlu, hangi kitaba ait oldugunu belirtir
- *     tur       -> "kapak" | "dosya"
+ *     kitapId   -> "kapak"/"dosya" turlerinde zorunlu, hangi kitaba ait oldugunu belirtir
+ *     duyuruId  -> "duyuru" turunde zorunlu, hangi duyuruya/kampanyaya ait oldugunu belirtir
+ *     tur       -> "kapak" | "dosya" | "duyuru"
  *     dosya     -> yuklenen fiziksel dosya (Part)
  *
  *   "kapak" turunde: uploads/kapaklar/ altina kaydedilir, kitap.kapak_resmi_url guncellenir.
  *   "dosya" turunde: uploads/kitaplar/ altina kaydedilir, kitap.dosya_yolu (+ formati) guncellenir.
+ *   "duyuru" turunde: uploads/duyurular/ altina kaydedilir, duyuru.resim_url guncellenir
+ *                      (ana sayfa hero slider / kampanya banner resmi).
  *
  * Basarili yanit: { "basarili": true, "url": "/uploads/kapaklar/kitap-5.jpg" }
  */
@@ -52,6 +56,7 @@ public class AdminYuklemeServlet extends HttpServlet {
     private static final java.util.Set<String> IZINLI_DOSYA_UZANTI = java.util.Set.of("pdf", "epub", "mobi");
 
     private final KitapDAO kitapDAO = new KitapDAO();
+    private final DuyuruDAO duyuruDAO = new DuyuruDAO();
     private final Gson gson = new Gson();
 
     @Override
@@ -61,17 +66,24 @@ public class AdminYuklemeServlet extends HttpServlet {
 
         try {
             String kitapIdParam = req.getParameter("kitapId");
+            String duyuruIdParam = req.getParameter("duyuruId");
             String tur = req.getParameter("tur");
             Part dosyaPart = req.getPart("dosya");
 
-            if (kitapIdParam == null || kitapIdParam.isBlank()) {
+            if (tur == null || (!tur.equals("kapak") && !tur.equals("dosya") && !tur.equals("duyuru"))) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print(gson.toJson(hata("kitapId zorunludur.")));
+                out.print(gson.toJson(hata("tur 'kapak', 'dosya' veya 'duyuru' olmalidir.")));
                 return;
             }
-            if (tur == null || (!tur.equals("kapak") && !tur.equals("dosya"))) {
+            if ("duyuru".equals(tur)) {
+                if (duyuruIdParam == null || duyuruIdParam.isBlank()) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print(gson.toJson(hata("duyuruId zorunludur.")));
+                    return;
+                }
+            } else if (kitapIdParam == null || kitapIdParam.isBlank()) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print(gson.toJson(hata("tur 'kapak' veya 'dosya' olmalidir.")));
+                out.print(gson.toJson(hata("kitapId zorunludur.")));
                 return;
             }
             if (dosyaPart == null || dosyaPart.getSize() == 0) {
@@ -80,9 +92,33 @@ public class AdminYuklemeServlet extends HttpServlet {
                 return;
             }
 
-            int kitapId = Integer.parseInt(kitapIdParam);
             String orijinalAd = dosyaPart.getSubmittedFileName();
             String uzanti = uzantiAl(orijinalAd);
+
+            if ("duyuru".equals(tur)) {
+                if (!IZINLI_KAPAK_UZANTI.contains(uzanti)) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print(gson.toJson(hata("Kampanya resmi sadece jpg/jpeg/png/webp olabilir.")));
+                    return;
+                }
+                int duyuruId = Integer.parseInt(duyuruIdParam);
+                File hedefDizin = DosyaYardimcisi.duyurularDizini(getServletContext());
+                String dosyaAdi = "duyuru-" + duyuruId + "-" + System.currentTimeMillis() + "." + uzanti;
+                File hedefDosya = new File(hedefDizin, dosyaAdi);
+                kaydet(dosyaPart, hedefDosya);
+
+                String url = "uploads/duyurular/" + dosyaAdi;
+                duyuruDAO.resimGuncelle(duyuruId, url);
+
+                Map<String, Object> sonuc = new HashMap<>();
+                sonuc.put("basarili", true);
+                sonuc.put("url", url);
+                sonuc.put("mesaj", "Kampanya resmi yuklendi.");
+                out.print(gson.toJson(sonuc));
+                return;
+            }
+
+            int kitapId = Integer.parseInt(kitapIdParam);
 
             if ("kapak".equals(tur)) {
                 if (!IZINLI_KAPAK_UZANTI.contains(uzanti)) {

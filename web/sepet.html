@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOOMBOOK | E-Kitap Dünyası</title>
+    <title>Sepetim | BOOMBOOK</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,76 +93,73 @@
     </nav>
 </header>
 
-<!-- ================= HERO / DUYURU PANOSU ================= -->
-<!-- Slaytlar artik Admin Panelinden yonetiliyor; JS /api/duyurular'dan cekip burayi dolduruyor. -->
-<section class="bb-hero">
-    <div class="bb-sirt-doku" aria-hidden="true"></div>
-    <button type="button" class="bb-hero-nav bb-hero-prev" id="bbHeroPrev">‹</button>
-    <div class="bb-hero-track" id="bbHeroTrack">
-        <div class="bb-hero-slide" style="background:linear-gradient(120deg,#2b2a6b,#4d2a46)">
-            <div>
-                <h2>BOOMBOOK'a Hoş Geldiniz</h2>
-                <p>Yükleniyor...</p>
+<main class="bb-container" style="padding-top:26px; padding-bottom:50px">
+
+    <div class="bb-breadcrumb">
+        <a href="index.html">Ana Sayfa</a> / Sepetim
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+        <h1 class="h4 mb-0 bb-baslik-serif">🛒 Sepetim</h1>
+        <a href="katalog.html" class="bb-btn bb-btn-outline-navy btn-sm">Alışverişe Devam Et</a>
+    </div>
+
+    <!-- Misafir sepeti bilgi banner'i: giris yapilmamis olsa da sepet gosterilir,
+         sadece kalici hale getirmek icin giris onerilir -->
+    <div id="bbSepetMisafirBanner" class="alert alert-info d-none d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <span>🛒 Şu an misafir olarak alışveriş yapıyorsunuz. Sepetiniz bu tarayıcıda saklanıyor.</span>
+        <a href="login.jsp?sonraki=sepet.html" class="bb-btn bb-btn-navy btn-sm">Giriş Yap ve Kalıcı Hale Getir</a>
+    </div>
+
+    <!-- Iskelet -->
+    <div id="bbSepetIskelet" class="bb-sepet-layout">
+        <div>
+            <div class="bb-skeleton mb-3" style="height:120px"></div>
+            <div class="bb-skeleton mb-3" style="height:120px"></div>
+        </div>
+        <div class="bb-skeleton" style="height:260px"></div>
+    </div>
+
+    <!-- Bos sepet durumu -->
+    <div id="bbSepetBosDurum" class="bb-sepet-bos d-none">
+        <div class="bb-empty-icon mb-3">🛒</div>
+        <h3 class="h5">Sepetiniz boş</h3>
+        <p class="text-muted">Beğendiğiniz kitapları sepete ekleyerek alışverişe başlayabilirsiniz.</p>
+        <a href="index.html" class="bb-btn bb-btn-navy">Alışverişe Başla</a>
+    </div>
+
+    <!-- Dolu sepet layout -->
+    <div id="bbSepetDoluLayout" class="bb-sepet-layout d-none">
+        <div id="bbSepetKalemler"></div>
+
+        <aside class="bb-siparis-ozet">
+            <h3>Sipariş Özeti</h3>
+
+            <div class="bb-kargo-progress-wrap" id="bbKargoBolumu">
+                <div class="bb-kargo-progress-mesaj" id="bbKargoMesaj"></div>
+                <div class="bb-kargo-progress-bar">
+                    <div class="bb-kargo-progress-fill" id="bbKargoDoluluk" style="width:0%"></div>
+                </div>
             </div>
-        </div>
+
+            <div class="bb-ozet-satir">
+                <span>Ara Toplam</span>
+                <span id="bbAraToplam">0,00 TL</span>
+            </div>
+            <div class="bb-ozet-satir">
+                <span>Kargo</span>
+                <span id="bbKargoUcreti">Ücretsiz</span>
+            </div>
+            <div class="bb-ozet-toplam">
+                <span>Toplam</span>
+                <span id="bbGenelToplam">0,00 TL</span>
+            </div>
+
+            <button type="button" class="bb-btn bb-btn-red w-100" id="bbSiparisTamamlaBtn">Satın Al</button>
+            <div class="text-center text-muted small mt-2">🔒 Güvenli ödeme altyapısı</div>
+        </aside>
     </div>
-    <button type="button" class="bb-hero-nav bb-hero-next" id="bbHeroNext">›</button>
-    <div class="bb-hero-dots" id="bbHeroDots"></div>
-</section>
-
-<!-- ================= COK SATANLAR ================= -->
-<section class="bb-section" id="bbCokSatanBolum">
-    <div class="bb-container">
-        <div class="bb-section-title-bar" id="bbCokSatanBaslik">ÇOK SATANLAR</div>
-
-        <div id="bbCokSatanIskelet" class="d-flex gap-3 overflow-hidden">
-            <div class="bb-skeleton" style="width:180px;aspect-ratio:2/3;flex-shrink:0"></div>
-            <div class="bb-skeleton" style="width:180px;aspect-ratio:2/3;flex-shrink:0"></div>
-            <div class="bb-skeleton" style="width:180px;aspect-ratio:2/3;flex-shrink:0"></div>
-            <div class="bb-skeleton" style="width:180px;aspect-ratio:2/3;flex-shrink:0"></div>
-        </div>
-        <div id="bbCokSatanBos" class="text-center text-muted py-4 d-none">Bu kritere uygun kitap bulunamadı.</div>
-
-        <div class="bb-carousel-wrap">
-            <button type="button" class="bb-carousel-arrow bb-carousel-prev" id="bbCokSatanPrev">‹</button>
-            <div class="bb-carousel-track" id="bbCokSatanTrack"></div>
-            <button type="button" class="bb-carousel-arrow bb-carousel-next" id="bbCokSatanNext">›</button>
-        </div>
-    </div>
-</section>
-
-<!-- ================= POPULER YAYINEVLERI ================= -->
-<section class="bb-section" style="padding-top:0">
-    <div class="bb-container">
-        <div class="bb-section-title-bar">POPÜLER YAYINEVLERİ</div>
-        <div class="bb-carousel-wrap">
-            <button type="button" class="bb-carousel-arrow bb-carousel-prev" id="bbYayineviPrev">‹</button>
-            <div class="bb-carousel-track" id="bbYayineviTrack"></div>
-            <button type="button" class="bb-carousel-arrow bb-carousel-next" id="bbYayineviNext">›</button>
-        </div>
-    </div>
-</section>
-
-<!-- ================= KAMPANYA KARTLARI ================= -->
-<!-- Icerik artik sabit degil: assets/boombook-anasayfa.js, admin panelinde
-     "Kampanya Kartı" turunde eklenen aktif duyurulari (api/duyurular?tur=kart)
-     buraya render eder. Admin resim eklemezse eski renk gradyani kullanilir. -->
-<section class="bb-section" style="padding-top:0">
-    <div class="bb-container">
-        <div class="bb-kampanya-grid" id="bbKampanyaGrid"></div>
-    </div>
-</section>
-
-<!-- ================= BILGI KUTULARI ================= -->
-<section class="bb-section" style="padding-top:0">
-    <div class="bb-container">
-        <div class="bb-bilgi-grid">
-            <div class="bb-bilgi-card"><span class="bb-bilgi-icon">🚚</span>Aynı Gün İçinde Kargo</div>
-            <div class="bb-bilgi-card"><span class="bb-bilgi-icon">📚</span>200.000+ Kitap Seçeneği</div>
-            <div class="bb-bilgi-card"><span class="bb-bilgi-icon">💳</span>Alternatif Ödeme Seçenekleri</div>
-        </div>
-    </div>
-</section>
+</main>
 
 <!-- ================= FOOTER ================= -->
 <footer class="bb-footer">
@@ -185,14 +182,13 @@
         <div class="bb-footer-grid">
             <div class="bb-footer-col">
                 <h6>Kategoriler</h6>
-                <a href="katalog.html?q=Roman">Roman</a>
-                <a href="katalog.html?q=Tarih">Tarih</a>
-                <a href="katalog.html?q=Kişisel Gelişim">Kişisel Gelişim</a>
-                <a href="katalog.html?q=Bilim Kurgu">Bilim Kurgu</a>
+                <a href="katalog.html">Tüm Kitaplar</a>
+                <a href="index.html#bbCokSatanBolum">Çok Satanlar</a>
+                <a href="index.html">Yeni Çıkanlar</a>
             </div>
             <div class="bb-footer-col">
                 <h6>Önemli Bilgiler</h6>
-                <a href="hakkimizda.html" class="text-decoration-none">Hakkımızda</a>
+                <a href="hakkimizda.html">Hakkımızda</a>
                 <a href="kvkk.html">Kişisel Verilerin Korunması</a>
                 <a href="teslimat-kosullari.html">Teslimat Koşulları</a>
                 <a href="satis-sozlesmesi.html">Satış Sözleşmesi</a>
@@ -220,7 +216,6 @@
     </div>
 </footer>
 
-
 <!-- ================= FAVORI OFFCANVAS ================= -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="bbFavoriOffcanvas">
     <div class="offcanvas-header">
@@ -242,7 +237,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/common.js"></script>
 <script src="assets/boombook-header.js"></script>
-<script src="assets/boombook-kart.js"></script>
-<script src="assets/boombook-anasayfa.js"></script>
+<script src="assets/sepet.js"></script>
 </body>
 </html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="tr" data-tema="aydinlik">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitaplar | BOOMBOOK</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600;1,700&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="assets/boombook.css" rel="stylesheet">
+</head>
+<body class="bb-body">
+
+<!-- ================= HEADER ================= -->
+<header class="bb-header">
+    <div class="bb-container bb-header-top">
+        <button type="button" class="bb-hamburger" id="bbHamburger" title="Menü" aria-label="Menüyü aç/kapat">☰</button>
+        <a href="index.html" class="bb-logo"><img src="assets/img/logo.png" alt="BoomBook logo" class="bb-logo-img"></a>
+
+        <div class="bb-search-wrap">
+            <svg class="bb-search-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <input type="text" class="bb-search-input" id="bbAramaInput" placeholder="Kitap, yazar veya yayınevi ara...">
+            <button type="button" class="bb-search-clear" id="bbAramaTemizle" aria-label="Aramayı temizle">&times;</button>
+            <div class="bb-search-results" id="bbAramaSonuclar"></div>
+        </div>
+
+        <div class="bb-header-actions">
+            <button type="button" class="bb-icon-btn" data-bs-toggle="offcanvas" data-bs-target="#bbFavoriOffcanvas" title="Favorilerim" aria-label="Favorilerim">
+                ♡
+                <span class="bb-badge ek-fav-count">0</span>
+            </button>
+
+            <div class="bb-cart-wrap">
+                <a href="sepet.html" class="bb-icon-btn" title="Sepetim" aria-label="Sepetim">
+                    🛒
+                    <span class="bb-badge ek-cart-count">0</span>
+                </a>
+                <div class="bb-cart-popover" id="bbCartPopover">
+                    <div class="bb-cart-popover-title">Sepetim</div>
+                    <div id="bbCartPopoverIcerik"><div class="bb-cart-popover-empty">Yükleniyor...</div></div>
+                    <div class="bb-cart-popover-total" id="bbCartPopoverToplam">
+                        <span>Toplam</span><span class="bb-cart-popover-toplam-deger">0,00 TL</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="sepet.html" class="bb-btn bb-btn-outline-navy flex-fill text-center">Sepete Git</a>
+                        <a href="sepet.html" class="bb-btn bb-btn-red flex-fill text-center">Satın Al</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dropdown">
+                <button type="button" class="bb-icon-btn" data-bs-toggle="dropdown" aria-expanded="false" title="Hesabım" aria-label="Hesabım">👤</button>
+                <ul class="dropdown-menu dropdown-menu-end" id="ekProfilMenu" style="min-width:220px">
+                    <li><span class="dropdown-item-text text-muted small">Yükleniyor...</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bb-nav" id="bbNav">
+        <div class="bb-container">
+            <ul class="bb-nav-list">
+                <li class="bb-nav-item">
+                    <span class="bb-nav-link">KATEGORİ</span>
+                    <div class="bb-mega-menu" id="kategoriMenuNav">
+                        <div class="bb-mega-menu-empty">Yükleniyor...</div>
+                    </div>
+                </li>
+                <li class="bb-nav-item">
+                    <span class="bb-nav-link">YAZAR</span>
+                    <div class="bb-mega-menu" id="yazarMenuNav">
+                        <div class="bb-mega-menu-empty">Yükleniyor...</div>
+                    </div>
+                </li>
+                <li class="bb-nav-item">
+                    <span class="bb-nav-link">YAYINEVİ</span>
+                    <div class="bb-mega-menu" id="yayineviMenuNav">
+                        <div class="bb-mega-menu-empty">Yükleniyor...</div>
+                    </div>
+                </li>
+                <li class="bb-nav-item">
+                    <a class="bb-nav-link" href="katalog.html">KİTAPLAR</a>
+                </li>
+                <li class="bb-nav-item bb-nav-item-red">
+                    <a class="bb-nav-link" href="katalog.html">ÇOK SATANLAR</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main class="bb-container" style="padding-top:26px; padding-bottom:40px">
+
+    <div class="bb-breadcrumb">
+        <a href="index.html">Ana Sayfa</a> / <span id="bbKatalogBaslikBreadcrumb">Kitaplar</span>
+    </div>
+
+    <div class="bb-katalog-layout" id="bbKatalogLayout">
+        <!-- ================= SOL FILTRE SIDEBAR ================= -->
+        <aside class="bb-filtre-sidebar">
+
+            <div class="bb-filtre-blok">
+                <div class="bb-filtre-baslik">
+                    Seçtiklerim
+                    <button type="button" class="bb-temizle-link" id="bbTumunuTemizle">Tümünü Temizle</button>
+                </div>
+                <div class="bb-aktif-filtreler" id="bbAktifFiltreler">
+                    <span class="bb-filtre-bos-mesaj">Henüz filtre seçilmedi.</span>
+                </div>
+            </div>
+
+            <div class="bb-filtre-blok bb-filtre-akordeon">
+                <button type="button" class="bb-filtre-baslik bb-filtre-akordeon-baslik" aria-expanded="true">
+                    Kategori
+                    <span class="bb-filtre-akordeon-ok">⌄</span>
+                </button>
+                <div class="bb-filtre-akordeon-govde">
+                    <div class="bb-filtre-liste" id="bbKategoriFiltreListe">
+                        <div class="bb-filtre-bos-mesaj">Yükleniyor...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bb-filtre-blok bb-filtre-akordeon">
+                <button type="button" class="bb-filtre-baslik bb-filtre-akordeon-baslik" aria-expanded="true">
+                    Yazar
+                    <span class="bb-filtre-akordeon-ok">⌄</span>
+                </button>
+                <div class="bb-filtre-akordeon-govde">
+                    <input type="text" class="bb-filtre-ara-input" id="bbYazarAra" placeholder="Yazar ara...">
+                    <div class="bb-filtre-liste" id="bbYazarFiltreListe">
+                        <div class="bb-filtre-bos-mesaj">Yükleniyor...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bb-filtre-blok bb-filtre-akordeon bb-kapali">
+                <button type="button" class="bb-filtre-baslik bb-filtre-akordeon-baslik" aria-expanded="false">
+                    Yayınevi
+                    <span class="bb-filtre-akordeon-ok">⌄</span>
+                </button>
+                <div class="bb-filtre-akordeon-govde">
+                    <input type="text" class="bb-filtre-ara-input" id="bbYayineviAra" placeholder="Yayınevi ara...">
+                    <div class="bb-filtre-liste" id="bbYayineviFiltreListe">
+                        <div class="bb-filtre-bos-mesaj">Yükleniyor...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bb-filtre-blok bb-filtre-akordeon bb-kapali">
+                <button type="button" class="bb-filtre-baslik bb-filtre-akordeon-baslik" aria-expanded="false">
+                    Fiyat Aralığı
+                    <span class="bb-filtre-akordeon-ok">⌄</span>
+                </button>
+                <div class="bb-filtre-akordeon-govde">
+                    <div class="bb-fiyat-inputs">
+                        <input type="number" id="bbFiyatMinInput" placeholder="Min">
+                        <span>—</span>
+                        <input type="number" id="bbFiyatMaxInput" placeholder="Max">
+                    </div>
+                    <div class="bb-range-wrap">
+                        <div class="bb-range-track"></div>
+                        <div class="bb-range-track-active" id="bbRangeAktif"></div>
+                        <input type="range" id="bbRangeMin">
+                        <input type="range" id="bbRangeMax">
+                    </div>
+                    <button type="button" class="bb-btn bb-btn-navy w-100 mt-2" id="bbFiyatUygula" style="padding:6px;font-size:0.78rem">Uygula</button>
+                </div>
+            </div>
+
+            <div class="bb-filtre-blok bb-filtre-akordeon bb-kapali">
+                <button type="button" class="bb-filtre-baslik bb-filtre-akordeon-baslik" aria-expanded="false">
+                    Değerlendirme Puanı
+                    <span class="bb-filtre-akordeon-ok">⌄</span>
+                </button>
+                <div class="bb-filtre-akordeon-govde">
+                    <label class="bb-filtre-check"><input type="radio" name="bbPuanFiltre" class="bb-puan-radio" value="4"> 4 Yıldız ve Üzeri</label>
+                    <label class="bb-filtre-check"><input type="radio" name="bbPuanFiltre" class="bb-puan-radio" value="3"> 3 Yıldız ve Üzeri</label>
+                    <label class="bb-filtre-check"><input type="radio" name="bbPuanFiltre" class="bb-puan-radio" value=""> Tümü</label>
+                </div>
+            </div>
+
+            <div class="bb-filtre-blok bb-filtre-akordeon bb-kapali">
+                <button type="button" class="bb-filtre-baslik bb-filtre-akordeon-baslik" aria-expanded="false">
+                    Dosya Formatı
+                    <span class="bb-filtre-akordeon-ok">⌄</span>
+                </button>
+                <div class="bb-filtre-akordeon-govde">
+                    <label class="bb-filtre-check"><input type="checkbox" class="bb-format-check" value="PDF"> PDF</label>
+                    <label class="bb-filtre-check"><input type="checkbox" class="bb-format-check" value="EPUB"> EPUB</label>
+                    <label class="bb-filtre-check"><input type="checkbox" class="bb-format-check" value="MOBI"> MOBI</label>
+                </div>
+            </div>
+
+            <div class="bb-filtre-blok">
+                <div class="bb-toggle-row mb-3">
+                    <span class="bb-filtre-baslik" style="margin:0">Sadece Stoktakiler</span>
+                    <label class="bb-toggle-switch">
+                        <input type="checkbox" id="bbSadeceStokta">
+                        <span class="bb-toggle-slider"></span>
+                    </label>
+                </div>
+                <button type="button" class="bb-btn w-100" id="bbFiltreSifirla" style="background:var(--bb-grey-light);color:var(--bb-ink)">Filtreleri Sıfırla</button>
+            </div>
+        </aside>
+
+        <!-- ================= SAG URUN LISTELEME ================= -->
+        <section>
+            <div class="bb-arama-ust-bar">
+                <div>
+                    <h1 class="h4 mb-1 bb-baslik-serif" id="bbKatalogBaslik">Kitaplar</h1>
+                    <div class="bb-arama-sonuc-sayisi" id="bbKatalogSonucSayisi"></div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="bb-btn" id="bbFiltrePanelToggle" style="background:var(--bb-grey-light);color:var(--bb-ink);padding:9px 16px;font-size:0.85rem;display:flex;align-items:center;gap:6px">
+                        <span id="bbFiltrePanelToggleIkon">◀</span> Filtreler
+                    </button>
+                    <select class="bb-sirala-select" id="bbSiralaSelect">
+                        <option value="enYeni">En Yeni</option>
+                        <option value="fiyatArtan">Fiyata Göre (Artan)</option>
+                        <option value="fiyatAzalan">Fiyata Göre (Azalan)</option>
+                        <option value="cokSatan">Çok Satanlar</option>
+                        <option value="puanAzalan">Puanına Göre</option>
+                    </select>
+                    <div class="bb-view-toggle">
+                        <button type="button" class="bb-view-btn bb-active" id="bbGridGorunum" title="Izgara Görünümü">▦</button>
+                        <button type="button" class="bb-view-btn" id="bbListeGorunum" title="Liste Görünümü">☰</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="bbKatalogIskelet" class="bb-arama-grid">
+                <div class="bb-skeleton" style="aspect-ratio:2/3"></div>
+                <div class="bb-skeleton" style="aspect-ratio:2/3"></div>
+                <div class="bb-skeleton" style="aspect-ratio:2/3"></div>
+                <div class="bb-skeleton" style="aspect-ratio:2/3"></div>
+            </div>
+
+            <div id="bbKatalogBos" class="text-center text-muted py-5 d-none">
+                <div style="font-size:2.4rem">📭</div>
+                Bu filtrelere uygun kitap bulunamadı.
+            </div>
+
+            <div class="bb-arama-grid" id="bbKatalogGrid"></div>
+
+            <div class="bb-pagination" id="bbSayfalama"></div>
+        </section>
+    </div>
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="bb-footer">
+    <div class="bb-container">
+        <div class="bb-footer-top">
+            <div class="bb-footer-perks">
+                <div class="bb-footer-perk"><span class="bb-footer-perk-icon">🚚</span> Aynı Gün Kargo</div>
+                <div class="bb-footer-perk"><span class="bb-footer-perk-icon">💳</span> 12 Taksit İmkanı</div>
+                <div class="bb-footer-perk"><span class="bb-footer-perk-icon">↩️</span> Kolay İade</div>
+                <div class="bb-footer-perk"><span class="bb-footer-perk-icon">🎧</span> Yardım Merkezi</div>
+            </div>
+            <div class="bb-footer-social">
+                <span>Bizi Takip Edin</span>
+                <a href="#" onclick="return false" class="bb-social-icon" aria-label="Instagram">📷</a>
+                <a href="#" onclick="return false" class="bb-social-icon" aria-label="Facebook">📘</a>
+                <a href="#" onclick="return false" class="bb-social-icon" aria-label="X / Twitter">🐦</a>
+                <a href="#" onclick="return false" class="bb-social-icon" aria-label="YouTube">▶️</a>
+            </div>
+        </div>
+        <div class="bb-footer-grid">
+            <div class="bb-footer-col">
+                <h6>Kategoriler</h6>
+                <a href="katalog.html">Tüm Kitaplar</a>
+                <a href="index.html#bbCokSatanBolum">Çok Satanlar</a>
+                <a href="index.html">Yeni Çıkanlar</a>
+            </div>
+            <div class="bb-footer-col">
+                <h6>Önemli Bilgiler</h6>
+                <a href="hakkimizda.html">Hakkımızda</a>
+                <a href="kvkk.html">Kişisel Verilerin Korunması</a>
+                <a href="teslimat-kosullari.html">Teslimat Koşulları</a>
+                <a href="satis-sozlesmesi.html">Satış Sözleşmesi</a>
+            </div>
+            <div class="bb-footer-col">
+                <h6>Hızlı Erişim</h6>
+                <a href="iletisim.html">İletişim</a>
+                <a href="siparislerim.html">Siparişlerim</a>
+                <a href="kutuphanem.html">Kütüphanem</a>
+            </div>
+            <div class="bb-footer-col">
+                <h6>Üye</h6>
+                <a href="login.jsp">Üye Girişi</a>
+                <a href="login.jsp?kayit=1">Yeni Üyelik</a>
+            </div>
+            <div class="bb-footer-col">
+                <h6>Bize Ulaşın</h6>
+                <a href="mailto:destek@boombook.com">destek@boombook.com</a>
+            </div>
+        </div>
+        <div class="bb-footer-bottom bb-footer-bottom-row">
+            <span>&copy; 2026 BOOMBOOK — Tüm hakları saklıdır.</span>
+            <button type="button" class="bb-tema-link" id="bbTemaBtn" title="Karanlık Mod" aria-label="Karanlık modu aç/kapat">🌙 Karanlık Mod</button>
+        </div>
+    </div>
+</footer>
+
+
+<!-- ================= FAVORI OFFCANVAS ================= -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="bbFavoriOffcanvas">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Favorilerim</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+        <div id="bbFavoriBos" class="text-center text-muted py-5 d-none">
+            <div style="font-size:2.4rem">♡</div>
+            Favori kitabınız yok.
+            <div class="mt-3">
+                <a href="katalog.html" class="bb-btn bb-btn-navy btn-sm">Kataloğa Git</a>
+            </div>
+        </div>
+        <div id="bbFavoriListe" class="flex-grow-1 overflow-auto"></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/common.js"></script>
+<script src="assets/boombook-header.js"></script>
+<script src="assets/boombook-kart.js"></script>
+<script src="assets/katalog.js"></script>
+</body>
+</html>

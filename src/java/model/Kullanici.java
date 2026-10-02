@@ -11,7 +11,7 @@ public class Kullanici {
     private int kullaniciId;
     private String adSoyad;
     private String email;
-    private String sifreHash;
+    private transient String sifreHash; // transient: Gson bu alani ASLA JSON'a dahil etmez
     private String rol;       // "Musteri" | "Admin"
     private boolean aktif;
     private String kayitTarihi;

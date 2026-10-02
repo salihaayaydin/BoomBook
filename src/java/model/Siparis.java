@@ -7,9 +7,12 @@ public class Siparis {
     private int siparisId;
     private int kullaniciId;
     private double toplamTutar;
+    private double kargoUcreti;
     private String odemeDurumu;
     private String siparisTarihi;
     private List<SiparisDetay> detaylar;
+    private String kullaniciAdSoyad; // sadece admin siparis listesinde doldurulur
+    private String kullaniciEmail;   // sadece admin siparis listesinde doldurulur
 
     public Siparis() {
     }
@@ -38,6 +41,14 @@ public class Siparis {
         this.toplamTutar = toplamTutar;
     }
 
+    public double getKargoUcreti() {
+        return kargoUcreti;
+    }
+
+    public void setKargoUcreti(double kargoUcreti) {
+        this.kargoUcreti = kargoUcreti;
+    }
+
     public String getOdemeDurumu() {
         return odemeDurumu;
     }
@@ -60,5 +71,21 @@ public class Siparis {
 
     public void setDetaylar(List<SiparisDetay> detaylar) {
         this.detaylar = detaylar;
+    }
+
+    public String getKullaniciAdSoyad() {
+        return kullaniciAdSoyad;
+    }
+
+    public void setKullaniciAdSoyad(String kullaniciAdSoyad) {
+        this.kullaniciAdSoyad = kullaniciAdSoyad;
+    }
+
+    public String getKullaniciEmail() {
+        return kullaniciEmail;
+    }
+
+    public void setKullaniciEmail(String kullaniciEmail) {
+        this.kullaniciEmail = kullaniciEmail;
     }
 }

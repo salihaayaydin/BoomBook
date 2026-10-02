@@ -52,7 +52,7 @@ public class AuthFilter implements Filter {
             if (apiIstegi) {
                 jsonHataGonder(resp, HttpServletResponse.SC_FORBIDDEN, "Bu islem icin Admin yetkisi gereklidir.");
             } else {
-                resp.sendRedirect(req.getContextPath() + "/index.html");
+                resp.sendRedirect(req.getContextPath() + "/index.html?hata=admin_yetkisi_yok");
             }
             return;
         }

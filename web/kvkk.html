@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOOMBOOK | E-Kitap Dünyası</title>
+    <title>Kişisel Verilerin Korunması | BOOMBOOK</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,6 @@
 </head>
 <body class="bb-body">
 
-<!-- ================= HEADER ================= -->
 <header class="bb-header">
     <div class="bb-container bb-header-top">
         <button type="button" class="bb-hamburger" id="bbHamburger" title="Menü" aria-label="Menüyü aç/kapat">☰</button>
@@ -93,76 +92,45 @@
     </nav>
 </header>
 
-<!-- ================= HERO / DUYURU PANOSU ================= -->
-<!-- Slaytlar artik Admin Panelinden yonetiliyor; JS /api/duyurular'dan cekip burayi dolduruyor. -->
-<section class="bb-hero">
-    <div class="bb-sirt-doku" aria-hidden="true"></div>
-    <button type="button" class="bb-hero-nav bb-hero-prev" id="bbHeroPrev">‹</button>
-    <div class="bb-hero-track" id="bbHeroTrack">
-        <div class="bb-hero-slide" style="background:linear-gradient(120deg,#2b2a6b,#4d2a46)">
-            <div>
-                <h2>BOOMBOOK'a Hoş Geldiniz</h2>
-                <p>Yükleniyor...</p>
-            </div>
-        </div>
+<main class="bb-container" style="padding-top:26px; padding-bottom:50px">
+
+    <div class="bb-breadcrumb">
+        <a href="index.html">Ana Sayfa</a> / Kişisel Verilerin Korunması
     </div>
-    <button type="button" class="bb-hero-nav bb-hero-next" id="bbHeroNext">›</button>
-    <div class="bb-hero-dots" id="bbHeroDots"></div>
-</section>
 
-<!-- ================= COK SATANLAR ================= -->
-<section class="bb-section" id="bbCokSatanBolum">
-    <div class="bb-container">
-        <div class="bb-section-title-bar" id="bbCokSatanBaslik">ÇOK SATANLAR</div>
+    <div class="bb-static-page">
 
-        <div id="bbCokSatanIskelet" class="d-flex gap-3 overflow-hidden">
-            <div class="bb-skeleton" style="width:180px;aspect-ratio:2/3;flex-shrink:0"></div>
-            <div class="bb-skeleton" style="width:180px;aspect-ratio:2/3;flex-shrink:0"></div>
-            <div class="bb-skeleton" style="width:180px;aspect-ratio:2/3;flex-shrink:0"></div>
-            <div class="bb-skeleton" style="width:180px;aspect-ratio:2/3;flex-shrink:0"></div>
-        </div>
-        <div id="bbCokSatanBos" class="text-center text-muted py-4 d-none">Bu kritere uygun kitap bulunamadı.</div>
+        <h1 class="bb-baslik-serif">Kişisel Verilerin Korunması (KVKK) Aydınlatma Metni</h1>
+        <p class="bb-static-lead">6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında hazırlanmıştır.</p>
 
-        <div class="bb-carousel-wrap">
-            <button type="button" class="bb-carousel-arrow bb-carousel-prev" id="bbCokSatanPrev">‹</button>
-            <div class="bb-carousel-track" id="bbCokSatanTrack"></div>
-            <button type="button" class="bb-carousel-arrow bb-carousel-next" id="bbCokSatanNext">›</button>
-        </div>
+        <h2>1. Veri Sorumlusu</h2>
+        <p>BOOMBOOK olarak, 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca veri sorumlusu sıfatıyla, kişisel verilerinizi aşağıda açıklanan kapsamda işlemekteyiz.</p>
+
+        <h2>2. İşlenen Kişisel Veriler</h2>
+        <p>Ad-soyad, e-posta adresi, telefon numarası, teslimat/fatura adresi, sipariş ve ödeme bilgileri, site kullanım ve tercih verileri işlenmektedir.</p>
+
+        <h2>3. İşleme Amaçları</h2>
+        <ul>
+            <li>Üyelik işlemlerinin yürütülmesi</li>
+            <li>Sipariş ve teslimat süreçlerinin gerçekleştirilmesi</li>
+            <li>Müşteri destek hizmetlerinin sağlanması</li>
+            <li>Yasal yükümlülüklerin yerine getirilmesi</li>
+            <li>Onay vermeniz halinde pazarlama iletişimi</li>
+        </ul>
+
+        <h2>4. Verilerin Aktarımı</h2>
+        <p>Kişisel verileriniz; kargo/lojistik iş ortaklarımız, ödeme kuruluşları ve yasal olarak yetkili kamu kurum/kuruluşları ile mevzuatın izin verdiği ölçüde paylaşılabilir.</p>
+
+        <h2>5. Haklarınız</h2>
+        <p>KVKK'nın 11. maddesi uyarınca; verilerinizin işlenip işlenmediğini öğrenme, işlenmişse buna ilişkin bilgi talep etme, işlenme amacını öğrenme, yurt içinde/dışında aktarıldığı üçüncü kişileri bilme, eksik/yanlış işlenmişse düzeltilmesini isteme, silinmesini/yok edilmesini talep etme haklarına sahipsiniz.</p>
+
+        <h2>6. Başvuru</h2>
+        <p>Haklarınızı kullanmak için <a href="mailto:destek@boombook.com">destek@boombook.com</a> adresi üzerinden bizimle iletişime geçebilirsiniz.</p>
+
+        <div class="bb-static-not">Bu metin örnek/şablon içerik olarak hazırlanmıştır; yayına almadan önce hukuk danışmanınıza onaylatmanız önerilir.</div>
+
     </div>
-</section>
-
-<!-- ================= POPULER YAYINEVLERI ================= -->
-<section class="bb-section" style="padding-top:0">
-    <div class="bb-container">
-        <div class="bb-section-title-bar">POPÜLER YAYINEVLERİ</div>
-        <div class="bb-carousel-wrap">
-            <button type="button" class="bb-carousel-arrow bb-carousel-prev" id="bbYayineviPrev">‹</button>
-            <div class="bb-carousel-track" id="bbYayineviTrack"></div>
-            <button type="button" class="bb-carousel-arrow bb-carousel-next" id="bbYayineviNext">›</button>
-        </div>
-    </div>
-</section>
-
-<!-- ================= KAMPANYA KARTLARI ================= -->
-<!-- Icerik artik sabit degil: assets/boombook-anasayfa.js, admin panelinde
-     "Kampanya Kartı" turunde eklenen aktif duyurulari (api/duyurular?tur=kart)
-     buraya render eder. Admin resim eklemezse eski renk gradyani kullanilir. -->
-<section class="bb-section" style="padding-top:0">
-    <div class="bb-container">
-        <div class="bb-kampanya-grid" id="bbKampanyaGrid"></div>
-    </div>
-</section>
-
-<!-- ================= BILGI KUTULARI ================= -->
-<section class="bb-section" style="padding-top:0">
-    <div class="bb-container">
-        <div class="bb-bilgi-grid">
-            <div class="bb-bilgi-card"><span class="bb-bilgi-icon">🚚</span>Aynı Gün İçinde Kargo</div>
-            <div class="bb-bilgi-card"><span class="bb-bilgi-icon">📚</span>200.000+ Kitap Seçeneği</div>
-            <div class="bb-bilgi-card"><span class="bb-bilgi-icon">💳</span>Alternatif Ödeme Seçenekleri</div>
-        </div>
-    </div>
-</section>
+</main>
 
 <!-- ================= FOOTER ================= -->
 <footer class="bb-footer">
@@ -185,14 +153,13 @@
         <div class="bb-footer-grid">
             <div class="bb-footer-col">
                 <h6>Kategoriler</h6>
-                <a href="katalog.html?q=Roman">Roman</a>
-                <a href="katalog.html?q=Tarih">Tarih</a>
-                <a href="katalog.html?q=Kişisel Gelişim">Kişisel Gelişim</a>
-                <a href="katalog.html?q=Bilim Kurgu">Bilim Kurgu</a>
+                <a href="katalog.html">Tüm Kitaplar</a>
+                <a href="index.html#bbCokSatanBolum">Çok Satanlar</a>
+                <a href="index.html">Yeni Çıkanlar</a>
             </div>
             <div class="bb-footer-col">
                 <h6>Önemli Bilgiler</h6>
-                <a href="hakkimizda.html" class="text-decoration-none">Hakkımızda</a>
+                <a href="hakkimizda.html">Hakkımızda</a>
                 <a href="kvkk.html">Kişisel Verilerin Korunması</a>
                 <a href="teslimat-kosullari.html">Teslimat Koşulları</a>
                 <a href="satis-sozlesmesi.html">Satış Sözleşmesi</a>
@@ -220,7 +187,6 @@
     </div>
 </footer>
 
-
 <!-- ================= FAVORI OFFCANVAS ================= -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="bbFavoriOffcanvas">
     <div class="offcanvas-header">
@@ -242,7 +208,5 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/common.js"></script>
 <script src="assets/boombook-header.js"></script>
-<script src="assets/boombook-kart.js"></script>
-<script src="assets/boombook-anasayfa.js"></script>
 </body>
 </html>

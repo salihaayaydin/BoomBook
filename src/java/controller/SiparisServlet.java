@@ -18,16 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * POST /api/siparis         -> Oturumdaki kullanicinin SUNUCUDAKI sepetinden (sepet tablosu)
- *                               yeni bir siparis olusturur (satin alma). Istek govdesi
- *                               GEREKMEZ / dikkate ALINMAZ; kalemler ve fiyatlar sepet
- *                               tablosundan ve siparis anindaki guncel kitap fiyatindan okunur.
- *                               kullaniciId istemciden alinmaz; oturumdan belirlenir.
- *                               Giris yapilmamissa 401, sepet bossa/stok yetersizse 409 doner.
- *                               Basarili olursa sunucudaki sepet otomatik olarak bosaltilir.
- * GET  /api/siparislerim    -> Oturumdaki kullanicinin gecmis siparislerini doner.
- */
 @WebServlet({"/api/siparis", "/api/siparislerim"})
 public class SiparisServlet extends HttpServlet {
 
@@ -48,9 +38,7 @@ public class SiparisServlet extends HttpServlet {
                 out.print(gson.toJson(hata("Siparis vermek icin giris yapmalisiniz.")));
                 return;
             }
-
             int siparisId = siparisDAO.siparisOlusturSepetten(oturumKullanicisi.getKullaniciId());
-
             Map<String, Object> sonuc = new HashMap<>();
             sonuc.put("basarili", true);
             sonuc.put("siparisId", siparisId);
@@ -58,14 +46,13 @@ public class SiparisServlet extends HttpServlet {
             out.print(gson.toJson(sonuc));
 
         } catch (SQLException e) {
-            // Sepet bos, stok yetersizligi veya baska bir is kurali ihlali
             resp.setStatus(HttpServletResponse.SC_CONFLICT);
             out.print(gson.toJson(hata(e.getMessage())));
         } finally {
             out.flush();
         }
     }
-
+    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

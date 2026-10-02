@@ -9,6 +9,8 @@ public class SiparisDetay {
     private int siparisId;
     private int kitapId;
     private String kitapAdi; // yanitlarda kolaylik icin
+    private String yazarAdi; // yanitlarda kolaylik icin (siparislerim karti icin)
+    private String kapakResmiUrl; // yanitlarda kolaylik icin (siparislerim karti icin)
     private double birimFiyat;
     private int adet;
 
@@ -43,6 +45,22 @@ public class SiparisDetay {
 
     public void setKitapAdi(String kitapAdi) {
         this.kitapAdi = kitapAdi;
+    }
+
+    public String getYazarAdi() {
+        return yazarAdi;
+    }
+
+    public void setYazarAdi(String yazarAdi) {
+        this.yazarAdi = yazarAdi;
+    }
+
+    public String getKapakResmiUrl() {
+        return kapakResmiUrl;
+    }
+
+    public void setKapakResmiUrl(String kapakResmiUrl) {
+        this.kapakResmiUrl = kapakResmiUrl;
     }
 
     public double getBirimFiyat() {

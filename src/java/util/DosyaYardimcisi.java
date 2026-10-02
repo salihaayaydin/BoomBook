@@ -54,6 +54,24 @@ public final class DosyaYardimcisi {
         return dizin;
     }
 
+    /** uploads/duyurular alt dizinini (ana sayfa kampanya/banner resimleri, yoksa olusturarak) doner. */
+    public static File duyurularDizini(ServletContext ctx) {
+        File dizin = new File(anaDizin(ctx), "duyurular");
+        if (!dizin.exists()) {
+            dizin.mkdirs();
+        }
+        return dizin;
+    }
+
+    /** uploads/degerlendirmeler alt dizinini (kullanicilarin yorum fotograflari, yoksa olusturarak) doner. */
+    public static File degerlendirmelerDizini(ServletContext ctx) {
+        File dizin = new File(anaDizin(ctx), "degerlendirmeler");
+        if (!dizin.exists()) {
+            dizin.mkdirs();
+        }
+        return dizin;
+    }
+
     /**
      * Veritabaninda saklanan goreli bir dosya_yolu / indirme_baglantisi
      * degerini (ornegin "kitaplar/kitap-12.pdf" ya da "/uploads/kitaplar/kitap-12.pdf")

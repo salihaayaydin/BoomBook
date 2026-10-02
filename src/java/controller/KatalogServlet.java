@@ -77,6 +77,9 @@ public class KatalogServlet extends HttpServlet {
             if (fiyatMin != null && !fiyatMin.isBlank()) filtre.setFiyatMin(Double.parseDouble(fiyatMin));
             if (fiyatMax != null && !fiyatMax.isBlank()) filtre.setFiyatMax(Double.parseDouble(fiyatMax));
 
+            String minPuan = req.getParameter("minPuan");
+            if (minPuan != null && !minPuan.isBlank()) filtre.setMinPuan(Double.parseDouble(minPuan));
+
             filtre.setSadeceStokta("true".equalsIgnoreCase(req.getParameter("sadeceStokta")));
             filtre.setSirala(req.getParameter("sirala"));
 

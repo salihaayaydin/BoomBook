@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 /**
  * Admin Paneli - Siparis Yonetimi.
  *   GET /api/admin/siparisler         -> TUM siparisleri (kullanici bilgisiyle) doner
+ *   GET /api/admin/siparisler?id=X    -> TEK bir siparisin detayini (kalemleriyle) doner
  *   PUT /api/admin/siparisler?id=X    -> { "odemeDurumu": "Tamamlandi" } durumunu gunceller
  */
 @WebServlet("/api/admin/siparisler")
@@ -38,8 +39,22 @@ public class AdminSiparisYonetimServlet extends HttpServlet {
         resp.setContentType("application/json;charset=UTF-8");
         PrintWriter out = resp.getWriter();
         try {
+            String idParam = req.getParameter("id");
+            if (idParam != null) {
+                Siparis siparis = siparisDAO.siparisDetayiGetir(Integer.parseInt(idParam));
+                if (siparis == null) {
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    out.print(gson.toJson(hata("Siparis bulunamadi.")));
+                } else {
+                    out.print(gson.toJson(siparis));
+                }
+                return;
+            }
             List<Siparis> liste = siparisDAO.tumSiparisleriGetir();
             out.print(gson.toJson(liste));
+        } catch (NumberFormatException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.print(gson.toJson(hata("id sayisal olmalidir.")));
         } catch (SQLException e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.print(gson.toJson(hata("Veritabani hatasi: " + e.getMessage())));

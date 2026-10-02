@@ -109,6 +109,10 @@ public class SiparisDAO {
      * @return olusan siparis_id
      * @throws SQLException sepet bossa, stok yetersizse veya baska bir veritabani hatasi olusursa
      */
+    // Sepet.js'teki UCRETSIZ_KARGO_LIMIT ile ayni deger olmali (on izleme ile gercek tutar tutarli olsun diye).
+    private static final double UCRETSIZ_KARGO_LIMIT = 150.0;
+    private static final double SABIT_KARGO_UCRETI = 29.90;
+
     public int siparisOlusturSepetten(int kullaniciId) throws SQLException {
         String sepetSelect =
                 "SELECT s.kitap_id, s.adet, k.kitap_adi, k.fiyat, k.indirimli_fiyat " +
@@ -118,7 +122,7 @@ public class SiparisDAO {
         String detayInsert = "INSERT INTO siparis_detay (siparis_id, kitap_id, birim_fiyat, adet) VALUES (?, ?, ?, ?)";
         String kutuphaneInsert = "INSERT IGNORE INTO kutuphane (kullanici_id, kitap_id, indirme_baglantisi) " +
                                   "SELECT ?, ?, dosya_yolu FROM kitap WHERE kitap_id = ?";
-        String siparisTamamla = "UPDATE siparis SET toplam_tutar = ?, odeme_durumu = 'Tamamlandi' WHERE siparis_id = ?";
+        String siparisTamamla = "UPDATE siparis SET toplam_tutar = ?, kargo_ucreti = ?, odeme_durumu = 'Tamamlandi' WHERE siparis_id = ?";
         String sepetTemizle = "DELETE FROM sepet WHERE kullanici_id = ?";
 
         try (Connection conn = DBUtil.getConnection()) {
@@ -157,7 +161,7 @@ public class SiparisDAO {
                     }
                 }
 
-                double toplamTutar = 0.0;
+                double urunToplami = 0.0;
 
                 for (SiparisDetay kalem : kalemler) {
                     int adet = kalem.getAdet() > 0 ? kalem.getAdet() : 1;
@@ -183,12 +187,16 @@ public class SiparisDAO {
                         ps.executeUpdate();
                     }
 
-                    toplamTutar += kalem.getBirimFiyat() * adet;
+                    urunToplami += kalem.getBirimFiyat() * adet;
                 }
 
+                double kargoUcreti = urunToplami >= UCRETSIZ_KARGO_LIMIT ? 0.0 : SABIT_KARGO_UCRETI;
+                double genelToplam = urunToplami + kargoUcreti;
+
                 try (PreparedStatement ps = conn.prepareStatement(siparisTamamla)) {
-                    ps.setDouble(1, toplamTutar);
-                    ps.setInt(2, siparisId);
+                    ps.setDouble(1, genelToplam);
+                    ps.setDouble(2, kargoUcreti);
+                    ps.setInt(3, siparisId);
                     ps.executeUpdate();
                 }
 
@@ -210,10 +218,11 @@ public class SiparisDAO {
 
     /** Kullanicinin gecmis siparislerini (detaylariyla birlikte) getirir. */
     public List<Siparis> getSiparislerByKullanici(int kullaniciId) throws SQLException {
-        String siparisSql = "SELECT siparis_id, kullanici_id, toplam_tutar, odeme_durumu, siparis_tarihi " +
+        String siparisSql = "SELECT siparis_id, kullanici_id, toplam_tutar, kargo_ucreti, odeme_durumu, siparis_tarihi " +
                              "FROM siparis WHERE kullanici_id = ? ORDER BY siparis_tarihi DESC";
-        String detaySql = "SELECT sd.siparis_id, sd.kitap_id, k.kitap_adi, sd.birim_fiyat, sd.adet " +
+        String detaySql = "SELECT sd.siparis_id, sd.kitap_id, k.kitap_adi, k.kapak_resmi_url, y.yazar_adi, sd.birim_fiyat, sd.adet " +
                            "FROM siparis_detay sd JOIN kitap k ON sd.kitap_id = k.kitap_id " +
+                           "LEFT JOIN yazar y ON k.yazar_id = y.yazar_id " +
                            "WHERE sd.siparis_id = ?";
 
         List<Siparis> siparisler = new ArrayList<>();
@@ -226,6 +235,7 @@ public class SiparisDAO {
                         s.setSiparisId(rs.getInt("siparis_id"));
                         s.setKullaniciId(rs.getInt("kullanici_id"));
                         s.setToplamTutar(rs.getDouble("toplam_tutar"));
+                        s.setKargoUcreti(rs.getDouble("kargo_ucreti"));
                         s.setOdemeDurumu(rs.getString("odeme_durumu"));
                         Timestamp ts = rs.getTimestamp("siparis_tarihi");
                         s.setSiparisTarihi(ts != null ? ts.toString() : null);
@@ -244,6 +254,8 @@ public class SiparisDAO {
                             d.setSiparisId(rs.getInt("siparis_id"));
                             d.setKitapId(rs.getInt("kitap_id"));
                             d.setKitapAdi(rs.getString("kitap_adi"));
+                            d.setYazarAdi(rs.getString("yazar_adi"));
+                            d.setKapakResmiUrl(rs.getString("kapak_resmi_url"));
                             d.setBirimFiyat(rs.getDouble("birim_fiyat"));
                             d.setAdet(rs.getInt("adet"));
                             detaylar.add(d);
@@ -254,5 +266,94 @@ public class SiparisDAO {
             }
         }
         return siparisler;
+    }
+
+    /* ================= ADMIN SIPARIS YONETIMI ================= */
+
+    /** Admin paneli icin TUM siparisleri (kullanici bilgisiyle birlikte) getirir. */
+    public List<Siparis> tumSiparisleriGetir() throws SQLException {
+        String sql = "SELECT s.siparis_id, s.kullanici_id, s.toplam_tutar, s.kargo_ucreti, s.odeme_durumu, s.siparis_tarihi, " +
+                     "       k.ad_soyad, k.email " +
+                     "FROM siparis s JOIN kullanici k ON s.kullanici_id = k.kullanici_id " +
+                     "ORDER BY s.siparis_tarihi DESC";
+        List<Siparis> liste = new ArrayList<>();
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Siparis s = new Siparis();
+                s.setSiparisId(rs.getInt("siparis_id"));
+                s.setKullaniciId(rs.getInt("kullanici_id"));
+                s.setToplamTutar(rs.getDouble("toplam_tutar"));
+                s.setKargoUcreti(rs.getDouble("kargo_ucreti"));
+                s.setOdemeDurumu(rs.getString("odeme_durumu"));
+                Timestamp ts = rs.getTimestamp("siparis_tarihi");
+                s.setSiparisTarihi(ts != null ? ts.toString() : null);
+                s.setKullaniciAdSoyad(rs.getString("ad_soyad"));
+                s.setKullaniciEmail(rs.getString("email"));
+                liste.add(s);
+            }
+        }
+        return liste;
+    }
+
+    /** Admin paneli icin TEK bir siparisin detayini (kalemleriyle birlikte) getirir. */
+    public Siparis siparisDetayiGetir(int siparisId) throws SQLException {
+        String siparisSql = "SELECT s.siparis_id, s.kullanici_id, s.toplam_tutar, s.kargo_ucreti, s.odeme_durumu, " +
+                             "       s.siparis_tarihi, k.ad_soyad, k.email " +
+                             "FROM siparis s JOIN kullanici k ON s.kullanici_id = k.kullanici_id " +
+                             "WHERE s.siparis_id = ?";
+        String detaySql = "SELECT sd.siparis_id, sd.kitap_id, k.kitap_adi, sd.birim_fiyat, sd.adet " +
+                           "FROM siparis_detay sd JOIN kitap k ON sd.kitap_id = k.kitap_id " +
+                           "WHERE sd.siparis_id = ?";
+
+        Siparis s;
+        try (Connection conn = DBUtil.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(siparisSql)) {
+                ps.setInt(1, siparisId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) return null;
+                    s = new Siparis();
+                    s.setSiparisId(rs.getInt("siparis_id"));
+                    s.setKullaniciId(rs.getInt("kullanici_id"));
+                    s.setToplamTutar(rs.getDouble("toplam_tutar"));
+                    s.setKargoUcreti(rs.getDouble("kargo_ucreti"));
+                    s.setOdemeDurumu(rs.getString("odeme_durumu"));
+                    Timestamp ts = rs.getTimestamp("siparis_tarihi");
+                    s.setSiparisTarihi(ts != null ? ts.toString() : null);
+                    s.setKullaniciAdSoyad(rs.getString("ad_soyad"));
+                    s.setKullaniciEmail(rs.getString("email"));
+                }
+            }
+
+            List<SiparisDetay> detaylar = new ArrayList<>();
+            try (PreparedStatement ps = conn.prepareStatement(detaySql)) {
+                ps.setInt(1, siparisId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        SiparisDetay d = new SiparisDetay();
+                        d.setSiparisId(rs.getInt("siparis_id"));
+                        d.setKitapId(rs.getInt("kitap_id"));
+                        d.setKitapAdi(rs.getString("kitap_adi"));
+                        d.setBirimFiyat(rs.getDouble("birim_fiyat"));
+                        d.setAdet(rs.getInt("adet"));
+                        detaylar.add(d);
+                    }
+                }
+            }
+            s.setDetaylar(detaylar);
+        }
+        return s;
+    }
+
+    /** Bir siparisin durumunu gunceller (Bekliyor / Tamamlandi / Basarisiz). */
+    public boolean durumGuncelle(int siparisId, String yeniDurum) throws SQLException {
+        String sql = "UPDATE siparis SET odeme_durumu = ? WHERE siparis_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, yeniDurum);
+            ps.setInt(2, siparisId);
+            return ps.executeUpdate() > 0;
+        }
     }
 }

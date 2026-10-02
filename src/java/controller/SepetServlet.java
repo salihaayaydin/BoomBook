@@ -1,7 +1,9 @@
 package controller;
 
 import com.google.gson.Gson;
+import dao.KitapDAO;
 import dao.SepetDAO;
+import model.Kitap;
 import model.Kullanici;
 import model.SepetKalemi;
 import util.SessionYardimcisi;
@@ -21,21 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Sunucu tarafi sepet API'si (sepet tablosu, kullaniciId'ye bagli).
- *
- *   GET    /api/sepet              -> oturumdaki kullanicinin sepetini doner
- *   POST   /api/sepet              -> { "kitapId": 5, "adet": 1 }  sepete ekler / adedini artirir
- *   PUT    /api/sepet              -> { "kitapId": 5, "adet": 3 }  adedi MUTLAK deger olarak gunceller
- *   DELETE /api/sepet?kitapId=5    -> tek bir kitabi sepetten kaldirir
- *   DELETE /api/sepet?hepsi=true   -> tum sepeti bosaltir
- *
- * Tum uc noktalar giris yapilmasini gerektirir; giris yoksa 401 doner.
- */
 @WebServlet("/api/sepet")
 public class SepetServlet extends HttpServlet {
 
     private final SepetDAO sepetDAO = new SepetDAO();
+    private final KitapDAO kitapDAO = new KitapDAO();
     private final Gson gson = new Gson();
 
     @Override
@@ -82,14 +74,24 @@ public class SepetServlet extends HttpServlet {
                     istek.adet > 0 ? istek.adet : 1);
 
             if (kalem == null) {
-                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print(gson.toJson(hata("Kitap bulunamadi.")));
+                Kitap kitap = kitapDAO.getById(istek.kitapId);
+                if (kitap == null) {
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    out.print(gson.toJson(hata("Kitap bulunamadi.")));
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_CONFLICT);
+                    out.print(gson.toJson(hata("Üzgünüz, \"" + kitap.getKitapAdi() + "\" şu anda stokta yok.")));
+                }
                 return;
             }
 
             Map<String, Object> sonuc = new HashMap<>();
             sonuc.put("basarili", true);
-            sonuc.put("mesaj", "Kitap sepete eklendi.");
+            boolean stoklaSinirli = kalem.getStokMiktari() > 0 && kalem.getAdet() >= kalem.getStokMiktari();
+            sonuc.put("mesaj", stoklaSinirli
+                    ? "Kitap sepete eklendi. Stok sınırı nedeniyle bu üründen en fazla " + kalem.getStokMiktari() + " adet sepete konabilir."
+                    : "Kitap sepete eklendi.");
+            sonuc.put("stoklaSinirli", stoklaSinirli);
             sonuc.put("kalem", kalem);
             out.print(gson.toJson(sonuc));
         } catch (SQLException e) {
@@ -123,7 +125,14 @@ public class SepetServlet extends HttpServlet {
 
             Map<String, Object> sonuc = new HashMap<>();
             sonuc.put("basarili", true);
-            sonuc.put("mesaj", kalem != null ? "Adet guncellendi." : "Kitap sepetten kaldirildi.");
+            boolean stoklaSinirli = kalem != null && kalem.getStokMiktari() > 0
+                    && kalem.getAdet() >= kalem.getStokMiktari() && kalem.getAdet() < istek.adet;
+            sonuc.put("mesaj", kalem == null
+                    ? "Kitap sepetten kaldırıldı."
+                    : stoklaSinirli
+                        ? "Stok sınırı nedeniyle adet " + kalem.getAdet() + " ile sınırlandırıldı."
+                        : "Adet güncellendi.");
+            sonuc.put("stoklaSinirli", stoklaSinirli);
             sonuc.put("kalem", kalem);
             out.print(gson.toJson(sonuc));
         } catch (SQLException e) {

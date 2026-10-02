@@ -6,7 +6,7 @@
     const hataMesaj = document.getElementById('ekHataMesaj');
     const girisUyari = document.getElementById('ekGirisUyari');
 
-    const PLACEHOLDER = 'https://placehold.co/300x450/ece3cd/16241f?text=Kapak+Yok';
+    const PLACEHOLDER = 'https://placehold.co/300x450/3a1f35/ffffff?text=Kapak+Yok';
 
     function tarihFormat(isoBenzeriTarih) {
         if (!isoBenzeriTarih) return '';
@@ -21,19 +21,19 @@
         const col = document.createElement('div');
         col.className = 'col-6 col-md-4 col-lg-3';
         col.innerHTML = `
-            <div class="card ek-book-card h-100">
-                <img src="${kapak}" class="ek-book-cover" alt="${k.kitapAdi}"
+            <div class="bb-lib-card">
+                <img src="${kapak}" class="bb-lib-cover" alt="${EK.escapeHtml(k.kitapAdi)}"
                      onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
-                <div class="card-body d-flex flex-column">
-                    <h3 class="ek-book-title">${k.kitapAdi}</h3>
-                    <div class="ek-book-meta mb-1">${k.yazarAdi || 'Bilinmeyen Yazar'}</div>
-                    <div class="ek-book-meta mb-2">
+                <div class="bb-lib-body">
+                    <h3 class="bb-lib-title">${EK.escapeHtml(k.kitapAdi)}</h3>
+                    <div class="bb-lib-meta">${EK.escapeHtml(k.yazarAdi || 'Bilinmeyen Yazar')}</div>
+                    <div class="bb-lib-meta mb-2">
                         ${k.dosyaFormati || 'E-Kitap'}${k.dosyaBoyutuMb ? ' &middot; ' + k.dosyaBoyutuMb + ' MB' : ''}
                     </div>
                     <div class="small text-muted mb-3 flex-grow-1">
                         Satın alma: ${tarihFormat(k.satinAlmaTarihi)}
                     </div>
-                    <a class="btn btn-ek-gold w-100" href="api/kutuphane/indir?kitapId=${k.kitapId}">
+                    <a class="bb-btn bb-btn-navy w-100" href="api/kutuphane/indir?kitapId=${k.kitapId}">
                         ⬇ İndir
                     </a>
                 </div>
